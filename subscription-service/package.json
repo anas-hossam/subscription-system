@@ -9,7 +9,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "docker": "docker-compose build --no-cache && docker-compose run --service-ports node"
   },
   "author": "",
   "license": "ISC",

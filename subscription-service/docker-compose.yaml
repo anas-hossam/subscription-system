@@ -1,0 +1,21 @@
+version: '3.4'
+services:
+  node:
+    tty: true
+    stdin_open: true
+    container_name: subscription-service
+    env_file:
+      - ./.env
+    depends_on:
+      - mongo
+    build:
+      context: .
+      target: deps
+    ports:
+      - ${PORT}:${PORT}
+    volumes:
+      - .:/var/code:rw
+    entrypoint: './startup.sh'
+
+  mongo:
+    image: 'mongo:3.6'
