@@ -18,7 +18,7 @@ module.exports = ({ repo }, app) => {
       .catch(next);
   });
 
-  app.get('/unsubscribe/:id', (req, res, next) => {
+  app.put('/unsubscribe/:id', (req, res, next) => {
     repo.cancelSubscription(req.params.id)
       .then(() => {
         res.send({ ok: true });
