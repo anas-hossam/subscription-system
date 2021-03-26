@@ -1,6 +1,6 @@
 'use strict';
 
-const db = process.env.DB || 'subscriptions-service';
+const db = process.env.DB || 'subscription-service';
 
 const dbSettings = {
     db,
