@@ -1,5 +1,7 @@
 'use strict';
 
+const { InternalServerError } = require('../Errors');
+
 const repository = (container) => {
     const { database: db } = container.cradle;
     const collection = db.collection('subscriptions');
@@ -8,7 +10,7 @@ const repository = (container) => {
         return new Promise((resolve, reject) => {
             collection.insertOne(subscription, (err, { ops: [result] }) => {
                 if (err) {
-                    reject(new Error('An error occuered creating a subscription, err:' + err));
+                    reject(new InternalServerError('An error occuered creating a subscription, err:' + err));
                 }
 
                 resolve({ subscription_id: result._id });
@@ -23,7 +25,7 @@ const repository = (container) => {
 
             const response = (err, subscription) => {
                 if (err) {
-                    reject(new Error('An error occuered canceling a subscription, err: ' + err));
+                    reject(new InternalServerError('An error occuered canceling a subscription, err: ' + err));
                 }
 
                 resolve(subscription);
@@ -40,7 +42,7 @@ const repository = (container) => {
 
             const response = (err, subscription) => {
                 if (err) {
-                    reject(new Error('An error occuered retrieving a subscription, err: ' + err));
+                    reject(new InternalServerError('An error occuered retrieving a subscription, err: ' + err));
                 }
 
                 resolve(subscription);
@@ -60,7 +62,7 @@ const repository = (container) => {
 
             const sendSubscriptions = (err) => {
                 if (err) {
-                    reject(new Error('An error occured fetching all subscriptions, err:' + err));
+                    reject(new InternalServerError('An error occured fetching all subscriptions, err:' + err));
                 }
 
                 resolve(subscriptions.slice());
@@ -86,7 +88,7 @@ const repository = (container) => {
 const connect = (container) => {
     return new Promise((resolve, reject) => {
         if (!container.resolve('database')) {
-            reject(new Error('connection db not supplied!'))
+            reject(new InternalServerError('connection db not supplied!'))
         }
 
         resolve(repository(container));

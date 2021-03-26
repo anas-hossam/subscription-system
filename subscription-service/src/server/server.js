@@ -6,6 +6,7 @@ const helmet = require('helmet');
 const bodyparser = require('body-parser');
 const cors = require('cors');
 const _api = require('../api/subscription');
+const { InternalServerError} = require('../Errors');
 
 const start = (container) => {
     return new Promise((resolve, reject) => {
@@ -14,11 +15,11 @@ const start = (container) => {
         const { authenticate } = container.resolve('middlewares')
 
         if (!repo) {
-            reject(new Error('The server must be started with a connected repository'));
+            reject(new InternalServerError('The server must be started with a connected repository'));
         }
 
         if (!port) {
-            reject(new Error('The server must be started with an available port'));
+            reject(new InternalServerError('The server must be started with an available port'));
         }
 
         const app = express();
@@ -32,7 +33,7 @@ const start = (container) => {
         }));
 
         app.use((err, req, res, next) => {
-            reject(new Error('Something went wrong!, err:' + err));
+            reject(new InternalServerError('Something went wrong!, err:' + err));
             res.status(500).send('Something went wrong!');
             next();
         });

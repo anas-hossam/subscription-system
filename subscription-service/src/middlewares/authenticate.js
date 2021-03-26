@@ -3,16 +3,9 @@
 const _ = require('lodash');
 const JWS = require('jws');
 
+const { ConfigurationError } = require('../Errors');
+
 const DEFAULT_MAC_ALGORITHM = 'HS512';
-
-class ConfigurationError extends Error {
-
-    constructor(message) {
-        super(message);
-        this.name = 'ConfigurationError';
-    }
-
-}
 
 const ERRORS = {
     MISSING_TOKEN: 'authentication.missing_token',
