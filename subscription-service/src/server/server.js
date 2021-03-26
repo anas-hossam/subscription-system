@@ -9,8 +9,9 @@ const _api = require('../api/subscription');
 
 const start = (container) => {
     return new Promise((resolve, reject) => {
-        const { port } = container.resolve('serverSettings');
+        const { port, tokenSecret } = container.resolve('serverSettings');
         const repo = container.resolve('repo');
+        const { authenticate } = container.resolve('middlewares')
 
         if (!repo) {
             reject(new Error('The server must be started with a connected repository'));
@@ -25,6 +26,11 @@ const start = (container) => {
         app.use(bodyparser.json());
         app.use(cors());
         app.use(helmet());
+
+        app.use(authenticate({
+            secret: tokenSecret,
+        }));
+
         app.use((err, req, res, next) => {
             reject(new Error('Something went wrong!, err:' + err));
             res.status(500).send('Something went wrong!');

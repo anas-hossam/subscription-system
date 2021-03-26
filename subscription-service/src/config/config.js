@@ -8,12 +8,12 @@ const dbSettings = {
     dbParameters: () => ({
         useUnifiedTopology: true,
     }),
-  }
+  };
   
   const serverSettings = {
     port: process.env.PORT || 3000,
-  }
-  
+    tokenSecret: process.env.TOKEN_SECRET || 'this is token signature secret',
+  };
   
   module.exports = Object.assign({}, { dbSettings, serverSettings })
   

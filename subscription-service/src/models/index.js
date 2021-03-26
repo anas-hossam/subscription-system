@@ -1,4 +1,5 @@
 const joi = require('joi');
+
 const subscription = require('./subscription')(joi);
 
 const schemas = Object.create({ subscription });
