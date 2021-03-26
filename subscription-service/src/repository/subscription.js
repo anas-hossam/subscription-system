@@ -31,7 +31,7 @@ const repository = (container) => {
                 resolve(subscription);
             };
 
-            collection.update(query, { is_active: false }, response);
+            collection.findOneAndUpdate(query, { $set: { is_active: false } }, response);
         })
     };
 
