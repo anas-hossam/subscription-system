@@ -1,0 +1,16 @@
+version: '3.4'
+services:
+  node:
+    tty: true
+    stdin_open: true
+    container_name: public-service
+    env_file:
+      - ./.env
+    build:
+      context: .
+      target: deps
+    ports:
+      - ${PORT}:${PORT}
+    volumes:
+      - .:/var/code:rw
+    entrypoint: './startup.sh'
