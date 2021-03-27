@@ -9,7 +9,6 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha 'test/**/*.js' --recursive --timeout 60000 --exit",
-    "lint": "eslint ./src/ ./test/",
     "start": "node src/index.js",
     "docker": "docker-compose build --no-cache && docker-compose run --service-ports node"
   },

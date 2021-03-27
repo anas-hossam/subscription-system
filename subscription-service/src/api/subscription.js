@@ -1,7 +1,6 @@
 'use strict';
 
 const _ = require('lodash');
-const subscription = require('../repository/subscription');
 
 const HTTP_ERRORS = {
     INVALID_DATA: 'subscription.invalid_data',
