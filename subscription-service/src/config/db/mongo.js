@@ -6,13 +6,14 @@ const connect = (options, mediator) => {
             options.dbUrl,
             options.dbParameters(),
             (err, client) => {
-            if (err) {
-                mediator.emit('db.error', err);
-            }
+                if (err) {
+                    mediator.emit('db.error', err);
+                }
 
-            mediator.emit('db.ready', client.db(options.db));
-        });
+                mediator.emit('db.ready', client.db(options.db));
+            }
+        );
     });
-}
+};
 
 module.exports = Object.assign({}, { connect });

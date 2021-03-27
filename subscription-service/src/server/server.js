@@ -5,6 +5,7 @@ const morgan = require('morgan');
 const helmet = require('helmet');
 const bodyparser = require('body-parser');
 const cors = require('cors');
+
 const _api = require('../api/subscription');
 const { InternalServerError} = require('../Errors');
 
@@ -12,7 +13,7 @@ const start = (container) => {
     return new Promise((resolve, reject) => {
         const { port, tokenSecret } = container.resolve('serverSettings');
         const repo = container.resolve('repo');
-        const { authenticate } = container.resolve('middlewares')
+        const { authenticate } = container.resolve('middlewares');
 
         if (!repo) {
             reject(new InternalServerError('The server must be started with a connected repository'));

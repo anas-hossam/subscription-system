@@ -18,6 +18,15 @@ class ConfigurationError extends SubscriptionsError {
 
 }
 
+class NotFoundError extends SubscriptionsError {
+
+    constructor(message) {
+        super(message);
+        this.name = 'NotFound';
+    }
+
+}
+
 class InternalServerError extends SubscriptionsError {
 
     constructor(message) {
@@ -39,6 +48,7 @@ class ValidatableError extends SubscriptionsError {
 
 module.exports = {
     ConfigurationError,
+    NotFoundError,
     InternalServerError,
     ValidatableError,
     SubscriptionsError,

@@ -1,6 +1,8 @@
 'use strict';
 
-const { InternalServerError } = require('../Errors');
+const _ = require('lodash');
+
+const { InternalServerError, NotFoundError, ValidatableError } = require('../Errors');
 
 const repository = (container) => {
     const { database: db } = container.cradle;
@@ -10,7 +12,7 @@ const repository = (container) => {
         return new Promise((resolve, reject) => {
             collection.insertOne(subscription, (err, { ops: [result] }) => {
                 if (err) {
-                    reject(new InternalServerError('An error occuered creating a subscription, err:' + err));
+                    reject(new InternalServerError('An error occurred creating a subscription, err:' + err));
                 }
 
                 resolve({ subscription_id: result._id });
@@ -18,39 +20,12 @@ const repository = (container) => {
         });
     };
 
-    const cancelSubscription = (subscriptionId) => {
-        return new Promise((resolve, reject) => {
-            const ObjectID = container.resolve('ObjectID');
-            const query = { _id: new ObjectID(subscriptionId) };
+    const cancelSubscription = (subscriptionId) =>
+        _findById(subscriptionId, { $set: { is_active: false } }, true);
 
-            const response = (err, subscription) => {
-                if (err) {
-                    reject(new InternalServerError('An error occuered canceling a subscription, err: ' + err));
-                }
+    const getSubscriptionById = (subscriptionId) => _findById(subscriptionId);
 
-                resolve(subscription);
-            };
-
-            collection.findOneAndUpdate(query, { $set: { is_active: false } }, response);
-        })
-    };
-
-    const getSubscriptionById = (subscriptionId) => {
-        return new Promise((resolve, reject) => {
-            const ObjectID = container.resolve('ObjectID');
-            const query = { _id: new ObjectID(subscriptionId) };
-
-            const response = (err, subscription) => {
-                if (err) {
-                    reject(new InternalServerError('An error occuered retrieving a subscription, err: ' + err));
-                }
-
-                resolve(subscription);
-            };
-
-            collection.findOne(query, {}, response);
-        })
-    };
+    const getSubscriptionByEmail = (email) => _findByEmail(email);
 
     const getAllSubscriptions = () => {
         return new Promise((resolve, reject) => {
@@ -62,7 +37,7 @@ const repository = (container) => {
 
             const sendSubscriptions = (err) => {
                 if (err) {
-                    reject(new InternalServerError('An error occured fetching all subscriptions, err:' + err));
+                    reject(new InternalServerError('An error occurred fetching all subscriptions, err:' + err));
                 }
 
                 resolve(subscriptions.slice());
@@ -76,18 +51,58 @@ const repository = (container) => {
         db.close()
     };
 
+    const _findById = (id, projection = {}, findAndUpdate = false) => {
+        return new Promise((resolve, reject) => {
+            const ObjectID = container.resolve('ObjectID');
+            if (!ObjectID.isValid(id)) {
+                reject(new ValidatableError('invalid id'));
+            }
+
+            resolve(new ObjectID(id));
+        })
+        .then(_id => _find({ _id }, projection, findAndUpdate));
+    }
+
+    const _findByEmail = email => _find({ email });
+
+    const _find = (query, projection = {}, findAndUpdate) => {
+        return new Promise((resolve, reject) => {
+            const response = (err, subscription) => {
+                if (err) {
+                    reject(new InternalServerError('An error occurred, err: ' + err));
+                }
+
+                if (findAndUpdate && !_.isNil(subscription.value)) {
+                    resolve(subscription.value);
+                } else if (!findAndUpdate && !_.isNil(subscription)) {
+                    resolve(subscription);
+                } else {
+                    reject(new NotFoundError());
+                }
+
+            };
+
+            const findParams = findAndUpdate ?
+                [query, projection, { returnOriginal: false } ,response] :
+                [query, projection ,response];
+            
+            collection[findAndUpdate ? 'findOneAndUpdate' : 'findOne'](...findParams);
+        });
+    }
+
     return Object.create({
         createSubscription,
         cancelSubscription,
         getSubscriptionById,
+        getSubscriptionByEmail,
         getAllSubscriptions,
-        disconnect
+        disconnect,
     });
 };
 
 const connect = (container) => {
     return new Promise((resolve, reject) => {
-        if (!container.resolve('database')) {
+        if (_.isEmpty(container) || !container.resolve('database')) {
             reject(new InternalServerError('connection db not supplied!'))
         }
 
