@@ -1,0 +1,488 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Subscription API",
+    "description": "Subscription Service",
+    "version": "0.1.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:39812"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "subscription",
+      "description": "Subscription Service Endpoints"
+    }
+  ],
+  "paths": {
+    "/subscribe": {
+      "post": {
+        "tags": [
+          "subscription"
+        ],
+        "summary": "Create a subscription",
+        "requestBody": {
+          "description": "simple subscription creation payload",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/subscription"
+              },
+              "examples": {
+                "Subscription": {
+                  "$ref": "#/components/examples/subscription"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "subscription created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/subscription_created_response"
+                },
+                "examples": {
+                  "success_response": {
+                    "$ref": "#/components/examples/subscription_created_response"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/validation_error_response"
+                },
+                "examples": {
+                  "invalid_schema": {
+                    "$ref": "#/components/examples/invalid_schema"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/subscription/{_id}": {
+      "get": {
+        "tags": [
+          "subscription"
+        ],
+        "summary": "get subscription by id",
+        "parameters": [
+          {
+            "name": "_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/object_id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Found subscription",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/subscription"
+                },
+                "examples": {
+                  "success_response": {
+                    "$ref": "#/components/examples/subscription_find_response"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/validation_error_response"
+                },
+                "examples": {
+                  "invalid_id": {
+                    "$ref": "#/components/examples/invalid_id"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/not_found_error_response"
+                },
+                "examples": {
+                  "not_found": {
+                    "$ref": "#/components/examples/not_found"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/subscriptions": {
+      "get": {
+        "tags": [
+          "subscription"
+        ],
+        "summary": "Find subscriptions",
+        "responses": {
+          "200": {
+            "description": "Found subscriptions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/subscription_collection"
+                },
+                "examples": {
+                  "success_response": {
+                    "$ref": "#/components/examples/subscriptions_success_response"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/unsubscribe/{_id}": {
+      "put": {
+        "tags": [
+          "subscription"
+        ],
+        "summary": "unsubscribe the subscription",
+        "parameters": [
+          {
+            "name": "_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/object_id"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "simple subscription updating payload",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/subscription"
+              },
+              "examples": {
+                "Subscription": {
+                  "$ref": "#/components/examples/subscription_with_pause"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "subscription updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/subscription_created_response"
+                },
+                "examples": {
+                  "success_response": {
+                    "$ref": "#/components/examples/subscription_created_response"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/validation_error_response"
+                },
+                "examples": {
+                  "invalid_schema": {
+                    "$ref": "#/components/examples/invalid_schema"
+                  },
+                  "invalid_id": {
+                    "$ref": "#/components/examples/invalid_id"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/not_found_error_response"
+                },
+                "examples": {
+                  "not_found": {
+                    "$ref": "#/components/examples/not_found"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT token should have payload"
+      }
+    },
+    "schemas": {
+      "object_id": {
+        "type": "string",
+        "pattern": "^[a-fA-F\\d]{24}$",
+        "format": "ObjectId"
+      },
+      "non_empty_string": {
+        "type": "string",
+        "minLength": 2,
+        "maxLength": 50
+      },
+      "subscription": {
+        "type": "object",
+        "required": [
+          "email",
+          "is_active",
+          "date_of_birth",
+          "newsletter_id"
+        ],
+        "properties": {
+          "_id": {
+            "$ref": "#/components/schemas/object_id"
+          },
+          "first_name": {
+            "type": "string",
+            "pattern": "/^[a-zA-Z '-]+$/i"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "date_of_birth": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "gender": {
+            "$ref": "#/components/schemas/non_empty_string"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "newsletter_id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9]+$"
+          }
+        }
+      },
+      "subscription_collection": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/subscription"
+        }
+      },
+      "subscription_created_response": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "subscriptions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "_id"
+                  ],
+                  "properties": {
+                    "_id": {
+                      "$ref": "#/components/schemas/object_id"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "validation_error_response": {
+        "title": "ValidationErrorResponse",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "string"
+          },
+          "details": {
+            "type": "object"
+          }
+        }
+      },
+      "not_found_error_response": {
+        "title": "ValidationErrorResponse",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "string"
+          },
+          "details": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "examples": {
+      "subscription": {
+        "value": {
+          "first_name": "Anas Hossam",
+          "email": "softeng.anas@gmail.com",
+          "gender": "male",
+          "is_active": true,
+          "date_of_birth": "1992-03-17",
+          "newsletter_id": "123abc"
+      }
+      },
+      "subscription_with_pause": {
+        "value": {
+          "first_name": "Anas Hossam",
+          "email": "softeng.anas@gmail.com",
+          "gender": "male",
+          "is_active": false,
+          "date_of_birth": "1992-03-17",
+          "newsletter_id": "123abc"
+      }
+      },
+      "subscription_created_response": {
+        "value": {
+          "ok": true,
+          "data": {
+            "subscriptions": [
+              {
+                "_id": "5e663fe3b37b239a99f86a04"
+              }
+            ]
+          }
+        }
+      },
+      "subscription_find_response": {
+        "value": {
+          "ok": true,
+          "data": {
+            "subscriptions": [
+              {
+                "_id": "5e663fe3b37b239a99f86a04",
+                "first_name": "Anas Hossam",
+                "email": "softeng.anas@gmail.com",
+                "gender": "male",
+                "is_active": false,
+                "date_of_birth": "1992-03-17",
+                "newsletter_id": "123abc"
+              }
+            ]
+          }
+        }
+      },
+      "subscriptions_success_response": {
+        "value": {
+          "ok": true,
+          "data": {
+            "subscriptions": [
+              {
+                "_id": "5e663fe3b37b239a99f86a04",
+                "first_name": "Anas Hossam",
+                "email": "softeng.anas@gmail.com",
+                "gender": "male",
+                "is_active": false,
+                "date_of_birth": "1992-03-17",
+                "newsletter_id": "123abc"
+              },
+              {
+                "_id": "5e663fe3b37b239a99f86b83",
+                "first_name": "abdo Hossam",
+                "email": "softeng.abdo@gmail.com",
+                "gender": "male",
+                "is_active": false,
+                "date_of_birth": "1994-08-17",
+                "newsletter_id": "123abc"
+              }
+            ]
+          }
+        }
+      },
+      "invalid_schema": {
+        "value": {
+          "ok": false,
+          "error": "public.invalid_data",
+          "details": {
+            "type": [
+              {
+                "type": "required",
+                "details": "invalid subscription data, err: ValidationError: \"email\" is required"
+              }
+            ]
+          }
+        }
+      },
+      "invalid_id": {
+        "value": {
+          "ok": false,
+          "error": "public.invalid_data",
+          "details": "invalid id"
+        }
+      },
+      "not_found": {
+        "value": {
+          "ok": false,
+          "error": "public.not_existing"
+        }
+      }
+    }
+  }
+}

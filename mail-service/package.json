@@ -13,7 +13,8 @@
   "scripts": {
     "start": "node src/index.js",
     "test": "mocha 'test/**/*.js' --recursive --timeout 60000 --exit",
-    "docker": "docker-compose build --no-cache && docker-compose run --service-ports node"
+    "docker": "docker-compose build --no-cache && docker-compose run --service-ports node",
+    "docs": "node ./src/docs/server.js"
   },
   "author": "",
   "license": "ISC",
@@ -34,6 +35,7 @@
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
     "mocha": "^8.3.2",
-    "supertest": "^6.1.3"
+    "supertest": "^6.1.3",
+    "swagger-ui-express": "^4.1.4"
   }
 }

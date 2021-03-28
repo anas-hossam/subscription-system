@@ -11,6 +11,7 @@ services:
       target: deps
     ports:
       - ${PORT}:${PORT}
+      - '39813:4050'
     volumes:
       - .:/var/code:rw
     entrypoint: './startup.sh'
