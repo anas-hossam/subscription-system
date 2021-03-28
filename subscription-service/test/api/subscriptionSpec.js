@@ -50,7 +50,21 @@ describe('API Subscription', () => {
             subscription.is_active = false;
             return Promise.resolve(subscription);
         }
-    }
+    };
+
+    const testMailService = {
+        send: () => {
+            return Promise.resolve({
+                envelope: {
+                    from: "hello@addidas.com",
+                    to: [
+                        "anas-elsayed@outlook.com",
+                    ]
+                },
+                messageId: "abcd-000000@email.amazonses.com",
+            });
+        }
+    };
 
     beforeEach(() => {
         const container = createContainer();
@@ -60,6 +74,7 @@ describe('API Subscription', () => {
             serverSettings: asValue(serverSettings),
             repo: asValue(testRepo),
             middlewares: asValue(middlewares),
+            mailService: asValue(testMailService),
         });
 
         return server

@@ -13,10 +13,15 @@ const start = (container) => {
     return new Promise((resolve, reject) => {
         const { port, tokenSecret } = container.resolve('serverSettings');
         const repo = container.resolve('repo');
+        const mailService = container.resolve('mailService');
         const { authenticate } = container.resolve('middlewares');
 
         if (!repo) {
             reject(new InternalServerError('The server must be started with a connected repository'));
+        }
+
+        if (!mailService) {
+            reject(new InternalServerError('The server must be started with a connected mail service'));
         }
 
         if (!port) {
@@ -44,7 +49,7 @@ const start = (container) => {
             next();
         });
 
-        const api = _api.bind(null, { repo });
+        const api = _api.bind(null, { repo, mailService });
         api(app);
 
         const server = app.listen(port, () => resolve(server));

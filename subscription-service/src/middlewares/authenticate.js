@@ -17,18 +17,18 @@ const ERRORS = {
 };
 
 module.exports = ({ secret, output = 'payload' }) => {
-    if(!_.isString(secret)) {
+    if (!_.isString(secret)) {
         throw new ConfigurationError('invalid token secret');
     }
 
-    if(!_.isString(output)) {
+    if (!_.isString(output)) {
         throw new ConfigurationError('invalid output');
     }
 
     return (req, res, next) => {
         const authorizationHeader = _.get(req, 'headers.authorization');
 
-        if(!_.isString(authorizationHeader)) {
+        if (!_.isString(authorizationHeader)) {
             return res.status(401).send({
                 ok: false,
                 error: ERRORS.MISSING_TOKEN,
@@ -37,7 +37,7 @@ module.exports = ({ secret, output = 'payload' }) => {
 
         const [tokenType, token] = authorizationHeader.split(' ');
 
-        if('bearer' !== _.lowerFirst(tokenType) || !_.isString(token)) {
+        if ('bearer' !== _.lowerFirst(tokenType) || !_.isString(token)) {
             return res.status(401).send({
                 ok: false,
                 error: ERRORS.NOT_SUPPORTED_TOKEN_TYPE,
@@ -55,7 +55,7 @@ module.exports = ({ secret, output = 'payload' }) => {
             });
         }
 
-        if(!isValidToken) {
+        if (!isValidToken) {
             return res.status(401).send({
                 ok: false,
                 error: ERRORS.HIJACKED_TOKEN,
@@ -75,7 +75,7 @@ module.exports = ({ secret, output = 'payload' }) => {
             });
         }
 
-        if(_.isNil(req[output].exp) || _.now() > req[output].exp) {
+        if (_.isNil(req[output].exp) || _.now() > req[output].exp) {
             return res.status(401).send({
                 ok: false,
                 error: ERRORS.EXPIRED_TOKEN,

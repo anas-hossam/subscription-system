@@ -6,26 +6,30 @@ const HTTP_ERRORS = {
     INVALID_DATA: 'subscription.invalid_data',
     NOT_EXISTING: 'subscription.not_existing',
     missingId: id => `subscription.missing_${id}`,
-    internal: () => 'subscription.internal_server_error',
+    internal: 'subscription.internal_server_error',
 };
 
 const respond = promise =>
     promise
     .then(response => {
-        if(!_.isArray(response)) {
-            response = [response];
+        if (_.get(response, 'mailResponse.ok') === false) {
+            console.log(response.mailResponse);
+        }
+
+        if (!_.isArray(response)) {
+            response = [response.repositoryResponse ? response.repositoryResponse : response];
         }
 
         return {
             ok: true,
-            data: response
+            data: response,
         };
     })
     .catch(err => {
         let error;
         let details;
 
-        if('NotFound' === err.name) {
+        if ('NotFound' === err.name) {
             error = HTTP_ERRORS.NOT_EXISTING;
         } else if ('Validatable' === err.name) {
             error = HTTP_ERRORS.INVALID_DATA;
@@ -36,7 +40,7 @@ const respond = promise =>
 
         const response = {
             ok: false,
-            error
+            error,
         };
 
         if (!_.isNil(details)) {
@@ -46,21 +50,33 @@ const respond = promise =>
         return response;
     });
 
-module.exports = ({ repo }, app) => {
+module.exports = ({ repo, mailService }, app) => {
     app.post('/subscribe', (req, res, next) => {
+        let repositoryResponse;
         const { validate } = req.container.cradle;
         const subscription = req.body.subscription;
         const promise = validate(subscription, 'subscription')
             .then(() => repo.getSubscriptionByEmail(subscription.email))
             .then(() => {
-                return { message: 'your email is already subscribed' };
+                return { ok: false, error: 'your email is already subscribed' };
             })
             .catch(err => {
                 if (err.name == 'NotFound') {
+                    
                     return repo.createSubscription(subscription);
                 }
 
                 throw err;
+            })
+            .then(response => {
+                repositoryResponse = response;
+                return mailService.send(_.omit(subscription, '_id'));
+            })
+            .then(mailResponse => {
+                return {
+                    repositoryResponse,
+                    mailResponse,
+                };
             });
 
         respond(promise).then(response => res.send(response));

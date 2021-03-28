@@ -21,6 +21,38 @@ describe('API Subscription', () => {
     let token;
     let subscriptionsClone = _.cloneDeep(subscriptions);
 
+    let testSubscriptionService = {
+        subscribe(subscription) {
+            return Promise.resolve({
+                ok: true,
+                data: [subscription],
+            });
+        },
+
+        list() {
+            return Promise.resolve({
+                ok: true,
+                data: subscriptionsClone,
+            });
+        },
+
+        get(id) {
+            return Promise.resolve({
+                ok: true,
+                data: [subscriptionsClone.find(subscription => subscription._id === id)],
+            });
+        },
+
+        unsubscribe(id) {
+            const subscription = subscriptionsClone.find(subscription => subscription._id === id);
+            subscription.is_active = false;
+            return Promise.resolve({
+                ok: true,
+                data: [subscription]
+            });
+        }
+    };
+
     beforeEach(() => {
         const container = createContainer();
 
@@ -30,18 +62,10 @@ describe('API Subscription', () => {
             subscriptionsApi: asValue(subscriptionsApi),
             createToken: asValue(createToken),
             middlewares: asValue(middlewares),
+            subscriptionService: asValue(testSubscriptionService),
         });
 
-        return Promise.resolve(new Subscriptions({
-                subscriptionsApi: container.resolve('subscriptionsApi'),
-                createToken: container.resolve('createToken'),
-            }))
-            .then(service => {
-                container.register({
-                    subscriptionService: asValue(service),
-                });
-            })
-            .then(() => server.start(container))
+        return server.start(container)
             .then(serv => {
                 app = serv;
                 return createToken(_.omit(subscriptionsClone[0], '_id'), serverSettings.tokenSecret);
@@ -54,6 +78,28 @@ describe('API Subscription', () => {
         app = null
     });
 
+    describe('subscribe', () => {
+        it('should create subscription', () => {
+            const sample = _.omit(subscriptions[0], '_id');
+            subscriptionsClone.shift();
+
+            const promise = request(app)
+                .post('/subscribe')
+                .set('Authorization', 'bearer ' + token)
+                .send({ subscription: sample })
+                .expect(200)
+                .then(response => {
+                    const subscriptionsResult = JSON.parse(response.text);
+                    expect(subscriptionsResult).to.deep.equal({
+                        ok: true,
+                        data: [sample],
+                    });
+                });
+
+                return promise;
+        });
+    });
+
     describe('subscriptions', () => {
         it('should return all subscriptions', () => {
             const promise = request(app)
@@ -62,7 +108,49 @@ describe('API Subscription', () => {
                 .expect(200)
                 .then(response => {
                     const subscriptionsResult = JSON.parse(response.text);
-                    expect(subscriptionsResult.ok).to.be.true;
+                    expect(subscriptionsResult).to.deep.equal({
+                        ok: true,
+                        data: subscriptionsClone,
+                    });
+                });
+
+                return promise;
+        });
+    });
+
+    describe('subscription/:id', () => {
+        it('should get subscription by id', () => {
+            const promise = request(app)
+                .get(`/subscription/${subscriptionsClone[0]._id}`)
+                .set('Authorization', 'bearer ' + token)
+                .expect(200)
+                .then(response => {
+                    const subscriptionsResult = JSON.parse(response.text);
+                    expect(subscriptionsResult).to.deep.equal({
+                        ok: true,
+                        data: [subscriptionsClone[0]],
+                    });
+                });
+
+                return promise;
+        });
+    });
+
+    describe('unsubscribe/:id', () => {
+        it('should cancel subscription by id', () => {
+            const promise = request(app)
+                .put(`/unsubscribe/${subscriptionsClone[0]._id}`)
+                .set('Authorization', 'bearer ' + token)
+                .expect(200)
+                .then(response => {
+                    const subscriptionsResult = JSON.parse(response.text);
+                    const expectedResult = _.cloneDeep(subscriptionsClone[0]);
+                    expectedResult.is_active = false;
+
+                    expect(subscriptionsResult).to.deep.equal({
+                        ok: true,
+                        data: [expectedResult],
+                    });
                 });
 
                 return promise;

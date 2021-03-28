@@ -11,10 +11,15 @@ const dbSettings = {
 };
 
 const serverSettings = {
-    port: process.env.PORT || 3000,
+    port: process.env.PORT || 3200,
     tokenSecret: process.env.TOKEN_SECRET || 'this is token signature secret',
 };
 
+const mailApi = {
+    url: process.env.SUBSCRIPTION_API_URL || 'http://localhost:3200',
+    tokenSecret: process.env.SUBSCRIPTION_TOKEN_SECRET || 'this is token signature secret',
+}
+
 module.exports = Object.assign({}, {
-    [process.env.NODE_ENV]: Object.assign({}, { dbSettings, serverSettings }),
+    [process.env.NODE_ENV]: Object.assign({}, { dbSettings, serverSettings, mailApi }),
 });

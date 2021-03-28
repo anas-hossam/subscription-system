@@ -87,7 +87,6 @@ class Subscriptions {
                 if (method === 'post') {
                     requestObj.data = { subscription: payload };
                 }
-                console.log('requestObj ', JSON.stringify(requestObj, null, 4));
         
                 return axios(requestObj);
             })

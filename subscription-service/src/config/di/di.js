@@ -2,7 +2,7 @@
 
 const { createContainer, asValue } = require('awilix');
 
-function initDI({ serverSettings, dbSettings, database, models }, mediator) {
+function initDI({ serverSettings, dbSettings, mailApi, database, models }, mediator) {
     mediator.once('init', () => {
         mediator.on('db.ready', (db) => {
             const container = createContainer();
@@ -12,6 +12,7 @@ function initDI({ serverSettings, dbSettings, database, models }, mediator) {
                 validate: asValue(models.validate),
                 ObjectID: asValue(database.ObjectID),
                 serverSettings: asValue(serverSettings),
+                mailApi: asValue(mailApi),
             });
 
             mediator.emit('di.ready', container);
