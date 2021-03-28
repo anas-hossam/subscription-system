@@ -99,13 +99,15 @@ describe('API Subscription', () => {
             const promise = request(app)
                 .post('/subscribe')
                 .set('Authorization', 'bearer ' + token)
-                .send({ subscription: sample })
+                .send(sample)
                 .expect(200)
                 .then(response => {
                     const subscriptionsResult = JSON.parse(response.text);
                     expect(subscriptionsResult).to.deep.equal({
                         ok: true,
-                        data: [sample],
+                        data: {
+                            subscriptions: [sample],
+                        },
                     });
                 });
 
@@ -123,7 +125,9 @@ describe('API Subscription', () => {
                     const subscriptionsResult = JSON.parse(response.text);
                     expect(subscriptionsResult).to.deep.equal({
                         ok: true,
-                        data: subscriptionsClone,
+                        data: {
+                            subscriptions: subscriptionsClone,
+                        },
                     });
                 });
 
@@ -141,7 +145,9 @@ describe('API Subscription', () => {
                     const subscriptionsResult = JSON.parse(response.text);
                     expect(subscriptionsResult).to.deep.equal({
                         ok: true,
-                        data: [subscriptionsClone[0]],
+                        data: {
+                            subscriptions: [subscriptionsClone[0]],
+                        },
                     });
                 });
 
@@ -162,7 +168,9 @@ describe('API Subscription', () => {
 
                     expect(subscriptionsResult).to.deep.equal({
                         ok: true,
-                        data: [expectedResult],
+                        data: {
+                            subscriptions: [expectedResult],
+                        },
                     });
                 });
 

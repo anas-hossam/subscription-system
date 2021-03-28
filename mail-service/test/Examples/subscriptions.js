@@ -3,7 +3,7 @@
 module.exports = [
     {
         _id: '605f1302690050045f729119',
-        firstName: 'Anas hossam',
+        first_name: 'Anas hossam',
         email: 'anas-elsayed@outlook.com',
         gender: 'male',
         is_active: true,
@@ -12,7 +12,7 @@ module.exports = [
     },
     {
         _id: '605f1302690050045f729118',
-        firstName: 'abdo hossam',
+        first_name: 'abdo hossam',
         email: 'abdo-elsayed@outlook.com',
         gender: 'male',
         is_active: true,
@@ -21,7 +21,7 @@ module.exports = [
     },
     {
         _id: '605f1302690050045f729117',
-        firstName: 'omar hossam',
+        first_name: 'omar hossam',
         email: 'omar-elsayed@outlook.com',
         gender: 'male',
         is_active: true,

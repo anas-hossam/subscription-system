@@ -1,7 +1,7 @@
 'use strict';
 
 const subscriptionSchema = (joi) => ({
-    firstName: joi.string().regex(/^[a-zA-Z '-]+$/i),
+    first_name: joi.string().regex(/^[a-zA-Z '-]+$/i),
     email: joi.string().email().required(),
     gender: joi.string().min(2).max(50),
     date_of_birth: joi.date().required(),

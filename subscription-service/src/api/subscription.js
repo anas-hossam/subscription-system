@@ -12,17 +12,22 @@ const HTTP_ERRORS = {
 const respond = promise =>
     promise
     .then(response => {
-        if (_.get(response, 'mailResponse.ok') === false) {
+        if(!_.isNil(_.get(response, 'repositoryResponse.ok'))) {
+            return response.repositoryResponse;
+        }
+    
+        if (!_.isNil(response.mailResponse)) {
             console.log(response.mailResponse);
         }
 
         if (!_.isArray(response)) {
             response = [response.repositoryResponse ? response.repositoryResponse : response];
         }
+        
 
         return {
             ok: true,
-            data: response,
+            data: { subscriptions: response },
         };
     })
     .catch(err => {
@@ -54,7 +59,7 @@ module.exports = ({ repo, mailService }, app) => {
     app.post('/subscribe', (req, res, next) => {
         let repositoryResponse;
         const { validate } = req.container.cradle;
-        const subscription = req.body.subscription;
+        const subscription = req.body;
         const promise = validate(subscription, 'subscription')
             .then(() => repo.getSubscriptionByEmail(subscription.email))
             .then(() => {
@@ -72,6 +77,7 @@ module.exports = ({ repo, mailService }, app) => {
                 repositoryResponse = response;
                 return mailService.send(_.omit(subscription, '_id'));
             })
+            .catch(err => err)
             .then(mailResponse => {
                 return {
                     repositoryResponse,

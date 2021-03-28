@@ -85,9 +85,9 @@ class Subscriptions {
                 };
         
                 if (method === 'post') {
-                    requestObj.data = { subscription: payload };
+                    requestObj.data = payload
                 }
-        
+                
                 return axios(requestObj);
             })
             .then(response => response.data)

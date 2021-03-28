@@ -6,7 +6,7 @@ const serverSettings = {
 };
 
 const subscriptionsApi = {
-    url: process.env.SUBSCRIPTION_API_URL || 'http://localhost:3000',
+    url: process.env.SUBSCRIPTION_API_URL || 'http://localhost:3200',
     tokenSecret: process.env.SUBSCRIPTION_TOKEN_SECRET || 'this is token signature secret',
 }
 

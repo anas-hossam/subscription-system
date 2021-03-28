@@ -10,7 +10,7 @@ const HTTP_ERRORS = {
 module.exports = ({ mailService , formatMail }, app) => {
     app.post('/sendMail', (req, res, next) => {
         const { validate, mailSettings } = req.container.cradle;
-        const subscription = req.body.subscription;
+        const subscription = req.body;
         validate(subscription, 'subscription')
             .then(() => formatMail(subscription, mailSettings.from_email))
             .then(email => mailService.send(email))

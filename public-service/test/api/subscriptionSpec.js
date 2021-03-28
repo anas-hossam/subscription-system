@@ -86,7 +86,7 @@ describe('API Subscription', () => {
             const promise = request(app)
                 .post('/subscribe')
                 .set('Authorization', 'bearer ' + token)
-                .send({ subscription: sample })
+                .send(sample)
                 .expect(200)
                 .then(response => {
                     const subscriptionsResult = JSON.parse(response.text);

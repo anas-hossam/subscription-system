@@ -10,7 +10,7 @@ const HTTP_ERRORS = {
 module.exports = ({ subscriptionService }, app) => {
     app.post('/subscribe', (req, res, next) => {
         const { validate } = req.container.cradle;
-        const subscription = req.body.subscription;
+        const subscription = req.body;
         validate(subscription, 'subscription')
             .then(() => subscriptionService.subscribe(subscription))
             .catch(err => {
@@ -20,6 +20,9 @@ module.exports = ({ subscriptionService }, app) => {
                 if ('Validatable' === err.name) {
                     error = HTTP_ERRORS.INVALID_DATA;
                     details = err.details;
+                } else {
+                    error = HTTP_ERRORS.internal;
+                    details = err.details || err.message;
                 }
 
                 const response = {

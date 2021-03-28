@@ -49,7 +49,7 @@ class Mail {
                 };
         
                 if (method === 'post') {
-                    requestObj.data = { subscription: payload };
+                    requestObj.data = payload
                 }
         
                 return axios(requestObj);

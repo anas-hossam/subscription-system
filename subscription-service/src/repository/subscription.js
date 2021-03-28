@@ -15,7 +15,7 @@ const repository = (container) => {
                     reject(new InternalServerError('An error occurred creating a subscription, err:' + err));
                 }
 
-                resolve({ subscription_id: result._id });
+                resolve({ _id: result._id });
             });
         });
     };

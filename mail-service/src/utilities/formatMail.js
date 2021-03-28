@@ -5,6 +5,6 @@ module.exports = (subscription, from) => {
         from,
         to: subscription.email,
         subject: 'Subscription Confirmation',
-        text: `Hello ${subscription.firstName}, you are subscribed to our newsletter`,
+        text: `Hello ${subscription.first_name}, you are subscribed to our newsletter`,
     };
 };
