@@ -2,12 +2,13 @@
 
 const _ = require('lodash');
 const request = require('supertest');
-const { createContainer, asValue } = require('awilix')
+const { createContainer, asValue } = require('awilix');
 
 const server = require('../../src/server/server');
 const middlewares = require('../../src/middlewares');
 const models = require('../../src/models');
 const { NotFoundError } = require('../../src/Errors');
+const { serverSettings } = require('../../src/config/config')[process.env.NODE_ENV];
 
 const { expect, createToken } = require('../Helpers');
 
@@ -17,10 +18,6 @@ describe('API Subscription', () => {
     let app;
     let token;
     let subscriptionsClone = _.cloneDeep(subscriptions);
-    const serverSettings = {
-        port: process.env.PORT,
-        tokenSecret: process.env.TOKEN_SECRET,
-    };
 
     let testRepo = {
         createSubscription(subscription) {
@@ -55,12 +52,10 @@ describe('API Subscription', () => {
     const testMailService = {
         send: () => {
             return Promise.resolve({
-                envelope: {
-                    from: "hello@addidas.com",
-                    to: [
-                        "anas-elsayed@outlook.com",
-                    ]
-                },
+                from: "hello@addidas.com",
+                to: [
+                    "anas-elsayed@outlook.com",
+                ],
                 messageId: "abcd-000000@email.amazonses.com",
             });
         }

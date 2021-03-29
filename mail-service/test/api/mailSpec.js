@@ -7,7 +7,6 @@ const { createContainer, asValue } = require('awilix')
 const server = require('../../src/server/server');
 const middlewares = require('../../src/middlewares');
 const models = require('../../src/models');
-// const { Mail } = require('../../src/Services');
 const { formatMail } = require('../../src/utilities');
 
 const { serverSettings, mailSettings } = require('../../src/config/config')[process.env.NODE_ENV];
@@ -24,12 +23,10 @@ describe('API Mail', () => {
     const testMailService = {
         send: () => {
             return Promise.resolve({
-                envelope: {
-                    from: "hello@addidas.com",
-                    to: [
-                        "anas-elsayed@outlook.com",
-                    ]
-                },
+                from: "hello@addidas.com",
+                to: [
+                    "anas-elsayed@outlook.com",
+                ],
                 messageId: "abcd-000000@email.amazonses.com",
             });
         }
@@ -71,12 +68,10 @@ describe('API Mail', () => {
                 .then(response => {
                     const subscriptionsResult = JSON.parse(response.text);
                     expect(subscriptionsResult).to.deep.equal({
-                        envelope: {
-                            from: "hello@addidas.com",
-                            to: [
-                                "anas-elsayed@outlook.com",
-                            ]
-                        },
+                        from: "hello@addidas.com",
+                        to: [
+                            "anas-elsayed@outlook.com",
+                        ],
                         messageId: "abcd-000000@email.amazonses.com",
                     });
                 });

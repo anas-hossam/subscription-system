@@ -16,8 +16,8 @@ const serverSettings = {
 };
 
 const mailApi = {
-    url: process.env.SUBSCRIPTION_API_URL || 'http://localhost:3200',
-    tokenSecret: process.env.SUBSCRIPTION_TOKEN_SECRET || 'this is token signature secret',
+    url: process.env.MAIL_API_URL || 'http://localhost:3300',
+    tokenSecret: process.env.MAIL_TOKEN_SECRET || 'this is token signature secret',
 }
 
 module.exports = Object.assign({}, {

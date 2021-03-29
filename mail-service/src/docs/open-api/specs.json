@@ -142,21 +142,15 @@
           "message_id": {
             "type": "string"
           },
-          "envelope": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "from": {
-                "type": "string",
-                "format": "email"
-              },
-              "to": {
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "format": "email"
-                }
-              }
+          "from": {
+            "type": "string",
+            "format": "email"
+          },
+          "to": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "email"
             }
           }
         }

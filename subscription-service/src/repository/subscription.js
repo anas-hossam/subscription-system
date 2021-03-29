@@ -58,7 +58,7 @@ const repository = (container) => {
                 reject(new ValidatableError('invalid id'));
             }
 
-            resolve(new ObjectID(id));
+            resolve(new ObjectID(id.toString()));
         })
         .then(_id => _find({ _id }, projection, findAndUpdate));
     }
