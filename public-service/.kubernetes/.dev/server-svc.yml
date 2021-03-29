@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: public-server
+  labels:
+    product: shared
+    environment: development
+    role: server
+    image: public-service
+    version: 1.0.0
+    app: public-server
+    release: stable
+spec:
+  type: ClusterIP
+  selector:
+    public.dev/role: server
+    release: stable
+  ports:
+    - name: https
+      port: 443
+      targetPort: 4000
+      protocol: TCP
+    - name: http
+      port: 80
+      targetPort: 4000
+      protocol: TCP

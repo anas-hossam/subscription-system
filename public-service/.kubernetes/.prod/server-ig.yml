@@ -1,0 +1,24 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: public-ingress
+  labels:
+    product: shared
+    environment: production
+    role: server
+    image: public-service
+    version: 0.16.0
+    app: public-server
+    release: stable
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/redirect-regex: "^http://(.*)"
+    traefik.ingress.kubernetes.io/redirect-replacement: "https://$1"
+spec:
+  rules:
+    - host: public.sia.anashossam.com
+      http:
+        paths:
+          - backend:
+              serviceName: public-server
+              servicePort: 80

@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: subscription-server
+  labels:
+    product: shared
+    environment: development
+    role: server
+    image: subscription-service
+    version: 1.0.0
+    app: subscription-server
+    release: stable
+spec:
+  type: ClusterIP
+  selector:
+    subscription.dev/role: server
+    release: stable
+  ports:
+    - name: https
+      port: 443
+      targetPort: 4000
+      protocol: TCP
+    - name: http
+      port: 80
+      targetPort: 4000
+      protocol: TCP

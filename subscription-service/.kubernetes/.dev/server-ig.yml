@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: subscription-ingress
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    ingress.kubernetes.io/custom-request-headers: "VERSION:1.1.2"
+    traefik.ingress.kubernetes.io/frontend-entry-points: http
+spec:
+  rules:
+    - host: subscription-dev.sia.anashossam.com
+      http:
+        paths:
+          - backend:
+              serviceName: subscription-server
+              servicePort: 80

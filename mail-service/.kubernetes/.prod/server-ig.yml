@@ -1,0 +1,24 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: mail-ingress
+  labels:
+    product: shared
+    environment: production
+    role: server
+    image: mail-service
+    version: 0.16.0
+    app: mail-server
+    release: stable
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/redirect-regex: "^http://(.*)"
+    traefik.ingress.kubernetes.io/redirect-replacement: "https://$1"
+spec:
+  rules:
+    - host: mail.sia.anashossam.com
+      http:
+        paths:
+          - backend:
+              serviceName: mail-server
+              servicePort: 80

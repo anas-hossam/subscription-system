@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: subscription-mongo
+  namespace: development
+  labels:
+    product: shared
+    environment: development
+    role: mongo
+    image: mongo
+    version: 3.6.5
+    app: subscription-service
+    release: stable
+spec:
+  serviceName: subscription-mongo
+  replicas: 1
+  podManagementPolicy: OrderedReady
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      subscription.dev/role: mongo
+      release: stable
+  template:
+    metadata:
+      labels:
+        subscription.dev/role: mongo
+        release: stable
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                - key: kops.k8s.io/instancegroup
+                  operator: In
+                  values:
+                    - cost-optimized-nodes
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  subscription.dev/role: mongo
+              topologyKey: kubernetes.io/hostname
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: subscription-mongo
+          image: mongo:3.6.5
+          ports:
+            - containerPort: 27017
+          command:
+            - mongod
+            - '--dbpath'
+            - '/data/db'
+            - '--storageEngine'
+            - 'wiredTiger'
+            - '--smallfiles'
+            - '--bind_ip_all'
+          livenessProbe:
+            exec:
+              command:
+                - mongo
+                - --eval
+                - "db.adminCommand('ping')"
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 5
+          volumeMounts:
+            - name: subscription-mongo
+              mountPath: /data/db
+          resources:
+            requests:
+              memory: 200Mi
+              cpu: 100m
+            limits:
+              memory: 400Mi
+              cpu: 200m
+  volumeClaimTemplates:
+    - metadata:
+        name: subscription-mongo
+      spec: 
+        accessModes: 
+          - ReadWriteOnce
+        storageClassName: ssd
+        resources:
+          requests:
+            storage: 5Gi

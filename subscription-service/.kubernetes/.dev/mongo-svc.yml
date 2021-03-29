@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: subscription-mongo
+  namespace: development
+  labels:
+    product: shared
+    environment: development
+    role: mongo
+    image: mongo
+    version: 3.6.5
+    app: subscription-service
+    release: stable
+spec:  
+  clusterIP: None
+  selector:
+    subscription.dev/role: mongo
+    release: stable
+  ports:
+    - port: 27017
+      targetPort: 27017

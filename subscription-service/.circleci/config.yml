@@ -1,0 +1,199 @@
+version: 2
+references:
+  workdir: &workdir
+    /var/code
+
+  attach_workdir: &attach_workdir
+    attach_workspace:
+      at: *workdir
+
+  images: &images
+    docker:
+      - image: node:12.9.0
+      - image: mongo:3.6.5
+    working_directory: *workdir
+
+jobs:
+  checks:
+    <<: *images
+    steps:
+      - checkout
+      - run:
+          name: Installing dependencies
+          command: npm install
+      - run:
+          name: Running tests
+          command: npm run test
+      - persist_to_workspace:
+          root: *workdir
+          paths:
+            - ./*
+
+  update_k8s_files:
+    docker:
+      - image: mikefarah/yq:2.4.0
+    working_directory: *workdir
+    steps:
+      - run:
+          name: Setup repository
+          command: |
+            apk update && apk add git
+            git config --global user.email "circleci@anashossam.com"
+            git config --global user.name "CircleCI"
+            git clone --single-branch --branch ${CIRCLE_BRANCH} https://${GH_TOKEN}@github.com/anashossam/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Update kubernetes files
+          command: |
+            IMAGE_VERSION=$(grep -o '"version":.*"' package.json | cut -d ' ' -f 2 | tr -d '"')
+            DEPLOYMENT_FILES="
+            .kubernetes/.dev/server-deploy.yml
+            .kubernetes/.prod/server-deploy.yml"
+
+            for f in $DEPLOYMENT_FILES
+            do
+                yq write -i $f metadata.labels.version $IMAGE_VERSION
+                yq write -i $f spec.template.spec.containers[0].image anashossam/${CIRCLE_PROJECT_REPONAME}:$IMAGE_VERSION
+            done
+      - run:
+          name: Commit and push
+          command: |
+            git add .
+            git commit -m "updating kubernetes files [skip ci]" || true
+            git push -q https://${GH_TOKEN}@github.com/anashossam/$CIRCLE_PROJECT_REPONAME.git $CIRCLE_BRANCH
+
+  build:
+    docker:
+      - image: docker:17.05.0-ce-git
+    working_directory: /var/code
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 17.05.0-ce
+      - run:
+          name: Building and pushing image
+          command: |
+            IMAGE_VERSION=$(grep -o '"version":.*"' package.json | cut -d ' ' -f 2 | tr -d '"')
+            docker build --build-arg=NPM_TOKEN=$NPM_TOKEN --build-arg=NODE_ENV=production -t anashossam/$CIRCLE_PROJECT_REPONAME:$IMAGE_VERSION .
+            docker login --username=$DOCKER_USERNAME --password=$DOCKER_PASSWORD
+            docker push anashossam/$CIRCLE_PROJECT_REPONAME:$IMAGE_VERSION
+
+  deploy_dev:
+    docker:
+      - image: roffe/kubectl:v1.13.2
+    working_directory: /var/code
+    steps:
+      - run:
+          name: Setup repository
+          command: |
+            apk update && apk add git
+            git clone --single-branch --branch ${CIRCLE_BRANCH} https://${GH_TOKEN}@github.com/anashossam/$CIRCLE_PROJECT_REPONAME.git .
+      - run: 
+          name: Deploy to Development
+          shell: /usr/local/bin/bash
+          command: |
+            DEPLOYMENT_FILES="
+            .kubernetes/.dev/server-deploy.yml"
+
+            KUBECONFIG_PATH=~/.kube
+            mkdir $KUBECONFIG_PATH
+            echo $K8S_TOKEN | base64 -d > $KUBECONFIG_PATH/config
+            IMAGE_VERSION=$(grep -o '"version":.*"' package.json | cut -d ' ' -f 2 | tr -d '"')
+            DEPLOYMENTS_NAMES=$(kubectl get deployment -l image=$CIRCLE_PROJECT_REPONAME -o wide -o=jsonpath='{$.items[*].metadata.name}')
+            IFS=" " read -ra DEPLOYMENTS_NAMES <<< $DEPLOYMENTS_NAMES
+
+            CURRENT_IMAGE=$(kubectl get deployment ${DEPLOYMENTS_NAMES[0]:-} -o=jsonpath='{.spec.template.spec.containers[0].image}')
+            # split Image into image name and tag
+            IFS=":" read -ra IMAGE_ARRAY <<< $CURRENT_IMAGE
+            CURRENT_IMAGE_VERSION=$(echo ${IMAGE_ARRAY[1]})
+            if [[ $CURRENT_IMAGE_VERSION == $IMAGE_VERSION ]]; then
+                for deployment in ${DEPLOYMENTS_NAMES[@]}
+                do
+                    kubectl patch deploy $deployment -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"deployment-date\":\"`date +'%s'`\"}}}}}"
+                done
+            else 
+                for file in $DEPLOYMENT_FILES
+                do
+                    kubectl apply -f $file
+                done
+            fi
+
+  deploy_prod:
+    docker:
+      - image: roffe/kubectl:v1.13.2
+    working_directory: /var/code
+    steps:
+      - run:
+          name: Setup repository
+          command: |
+            apk update && apk add git
+            git clone --single-branch --branch ${CIRCLE_BRANCH} https://${GH_TOKEN}@github.com/anashossam/$CIRCLE_PROJECT_REPONAME.git .
+      - run: 
+          name: Deploy to Production
+          shell: /usr/local/bin/bash
+          command: |
+            DEPLOYMENT_FILES="
+            .kubernetes/.prod/server-deploy.yml"
+
+            KUBECONFIG_PATH=~/.kube
+            mkdir $KUBECONFIG_PATH
+            echo $K8S_TOKEN_PROD | base64 -d > $KUBECONFIG_PATH/config
+            IMAGE_VERSION=$(grep -o '"version":.*"' package.json | cut -d ' ' -f 2 | tr -d '"')
+            DEPLOYMENTS_NAMES=$(kubectl get deployment -l image=$CIRCLE_PROJECT_REPONAME -o wide -o=jsonpath='{$.items[*].metadata.name}')
+            IFS=" " read -ra DEPLOYMENTS_NAMES <<< $DEPLOYMENTS_NAMES
+            CURRENT_IMAGE=$(kubectl get deployment ${DEPLOYMENTS_NAMES[0]:-} -o=jsonpath='{.spec.template.spec.containers[0].image}')
+            # split Image into image name and tag
+            IFS=":" read -ra IMAGE_ARRAY <<< $CURRENT_IMAGE
+            CURRENT_IMAGE_VERSION=$(echo ${IMAGE_ARRAY[1]})
+            if [[ $CURRENT_IMAGE_VERSION == $IMAGE_VERSION ]]; then
+                for deployment in ${DEPLOYMENTS_NAMES[@]}
+                do
+                    kubectl patch deploy $deployment -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"deployment-date\":\"`date +'%s'`\"}}}}}"
+                done
+            else 
+                for file in ${DEPLOYMENT_FILES[@]}
+                do
+                    kubectl apply -f $file
+                done
+            fi
+
+workflows:
+  version: 2
+  build_and_push:
+    jobs:
+      - checks:
+          context: npm
+      - build:
+          context: docker
+          requires:
+            - checks
+          filters:
+            branches:
+              only: main
+      - update_k8s_files:
+          context: continuous-deployment
+          requires:
+            - build
+          filters:
+            branches:
+              only: main
+      - deploy_dev:
+          context: continuous-deployment
+          requires:
+            - update_k8s_files
+          filters:
+            branches:
+              only: main
+      - approve_prod:
+          type: approval
+          requires:
+            - deploy_dev
+          filters:
+            branches:
+              only: main
+      - deploy_prod:
+          context: continuous-deployment
+          requires:
+            - approve_prod
+          filters:
+            branches:
+              only: main

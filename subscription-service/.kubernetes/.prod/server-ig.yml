@@ -1,0 +1,24 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: subscription-ingress
+  labels:
+    product: shared
+    environment: production
+    role: server
+    image: subscription-service
+    version: 0.16.0
+    app: subscription-server
+    release: stable
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/redirect-regex: "^http://(.*)"
+    traefik.ingress.kubernetes.io/redirect-replacement: "https://$1"
+spec:
+  rules:
+    - host: subscription.sia.anashossam.com
+      http:
+        paths:
+          - backend:
+              serviceName: subscription-server
+              servicePort: 80

@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: subscription-server
+  labels:
+    product: shared
+    environment: production
+    role: server
+    image: subscription-service
+    version: 1.2.0
+    app: subscription-server
+    release: stable
+spec:
+  replicas: 3
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      subscription.prod/role: server
+      release: stable
+  template:
+    metadata:
+      labels:
+        subscription.prod/role: server
+        release: stable
+    spec:
+      serviceAccountName: docker-registry-puller
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kops.k8s.io/instancegroup
+                operator: In
+                values:
+                - general-optimized-nodes
+      containers:
+      - name: subscription-server
+        image: anashossam/subscription-service:1.0.0
+        imagePullPolicy: Always
+        command:
+        - envconsul
+        - -config=/consul/config/envconsul.hcl
+        - -prefix
+        - production/common
+        - -prefix
+        - production/subscription
+        - node
+        - server.js
+        ports:
+        - containerPort: 4000
+        env:
+        - name: CONSUL_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: consul-token
+              key: token
+        volumeMounts:
+        - name: envconsul-config
+          mountPath: /consul/config
+        resources:
+          requests:
+            memory: 128Mi
+            cpu: 50m
+          limits:
+            memory: 256Mi
+            cpu: 100m
+      volumes:
+      - name: envconsul-config
+        configMap:
+          name: envconsul

@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: public-server
+  labels:
+    product: shared
+    environment: development
+    role: server
+    image: public-service
+    version: 1.0.0
+    app: public-server
+    release: stable
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      public.dev/role: server
+      release: stable
+  template:
+    metadata:
+      labels:
+        public.dev/role: server
+        release: stable
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kops.k8s.io/instancegroup
+                operator: In
+                values:
+                - cost-optimized-nodes
+      serviceAccountName: docker-registry-puller
+      containers:
+      - name: public-server
+        image: anashossam/public-service:1.0.0
+        imagePullPolicy: Always
+        command:
+        - envconsul
+        - -config=/consul/config/envconsul.hcl
+        - -prefix
+        - development/common
+        - -prefix
+        - development/public
+        - node
+        - src/server.js
+        ports:
+        - containerPort: 4000
+        env:
+        - name: CONSUL_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: consul-token
+              key: token
+        volumeMounts:
+        - name: envconsul-config
+          mountPath: /consul/config
+        resources:
+          requests:
+            memory: 128Mi
+            cpu: 50m
+          limits:
+            memory: 256Mi
+            cpu: 100m
+      volumes:
+      - name: envconsul-config
+        configMap:
+          name: envconsul
