@@ -28,6 +28,7 @@ mediator.on('di.ready', (container) => {
 
     return Promise.resolve(new Mail({
         config: container.resolve('mailSettings'),
+        formatMail: container.resolve('formatMail',)
     }))
         .then(service => {
             console.log('Connected. Starting Server');

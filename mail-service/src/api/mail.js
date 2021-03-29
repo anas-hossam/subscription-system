@@ -7,13 +7,12 @@ const HTTP_ERRORS = {
     internal: 'mail.internal_server_error',
 };
 
-module.exports = ({ mailService , formatMail }, app) => {
+module.exports = ({ mailService }, app) => {
     app.post('/sendMail', (req, res, next) => {
-        const { validate, mailSettings } = req.container.cradle;
+        const { validate } = req.container.cradle;
         const subscription = req.body;
         validate(subscription, 'subscription')
-            .then(() => formatMail(subscription, mailSettings.from_email))
-            .then(email => mailService.send(email))
+            .then(() => mailService.send(subscription))
             .catch(err => {
                 let error;
                 let details;

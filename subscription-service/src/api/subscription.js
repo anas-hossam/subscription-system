@@ -16,9 +16,7 @@ const respond = promise =>
             return response.repositoryResponse;
         }
     
-        if (!_.isNil(response.mailResponse)) {
-            console.log(response.mailResponse);
-        }
+        // TODO adding pub/sub to publish logs of mailResponse service
 
         if (!_.isArray(response)) {
             response = [response.repositoryResponse ? response.repositoryResponse : response];

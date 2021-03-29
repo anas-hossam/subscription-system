@@ -25,6 +25,7 @@ mediator.on('di.ready', (container) => {
     return Promise.resolve(
         new Mail({
             config: container.resolve('mailSettings'),
+            formatMail: container.resolve('formatMail'),
         })
     )
         .then(service => {
@@ -36,7 +37,6 @@ mediator.on('di.ready', (container) => {
             return new Promise((resolve, reject) => {
                 const { tokenSecret } = container.resolve('serverSettings');
                 const mailService = container.resolve('mailService');
-                const formatMail = container.resolve('formatMail');
                 const { authenticate } = container.resolve('middlewares');
                 
                 const app = express();
@@ -73,7 +73,7 @@ mediator.on('di.ready', (container) => {
                     next();
                 });
         
-                const api = _api.bind(null, { formatMail, mailService });
+                const api = _api.bind(null, { mailService });
                 api(app);
         
                 const server = app.listen(PORT, () => resolve(server));

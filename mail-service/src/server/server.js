@@ -13,7 +13,6 @@ const start = (container) => {
     return new Promise((resolve, reject) => {
         const { port, tokenSecret } = container.resolve('serverSettings');
         const mailService = container.resolve('mailService');
-        const formatMail = container.resolve('formatMail');
         const { authenticate } = container.resolve('middlewares');
 
         if (!mailService) {
@@ -45,7 +44,7 @@ const start = (container) => {
             next();
         });
 
-        const api = _api.bind(null, { mailService, formatMail });
+        const api = _api.bind(null, { mailService });
         api(app);
 
         const server = app.listen(port, () => resolve(server));
