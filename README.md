@@ -14,4 +14,8 @@ This system will be composed of three microservices:
 - when running `docker` start first by running `subscription-service`, as it is initialize common network between the three services then you can run any service after it.
 
 - you need to read README in each service to be able to run it by following how to run section.
+
+- you can find CI/CD pipeline at folder `.circleci/` in each service.
+
+- you can find config files for deploying microservices in to kubernetes cluster at folder `.kubernetes/` in each service.
 ```
