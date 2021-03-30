@@ -25,17 +25,26 @@ This microservice implementing subscription logic, including presistence of subs
 
 ## [How To Use](#how-to-use)
 ```
-- To run locally, first we need to install dependencies, then start server
+- To run locally:
 ```
-- $ npm install
+- default port is `3200`.
+- make sure that you have `node` and `mongodb` installed on your device and `mongodb` server is running.
+- create `.env` file at the same path of `.env-example` file and copy content of `.env-example` to `.env` file.
+- update value of `MAIL_API_URL` in `.env` file to be `MAIL_API_URL=localhost:3300`
+- run `$ npm install`
+
 - $ npm run start
 ```
-- To run docker
+- To run docker:
 ```
+- default port is `3200`
+- create `.env` file at the same path of `.env-example` file and copy content of `.env-example` to `.env` file.
+- update value of `MAIL_API_URL` in `.env` file to be `MAIL_API_URL=${container-name}:3300` where `${container-name}` shuold be replaced by docker container name.
 - $ npm run docker
 ```
-- To run Swagger docs, run below command then open url in browser after getting port from console so, will be like that `localhost:${port}/docs`
+- To run Swagger:
 ```
+- run below command then open url in browser after getting port from console so, will be like that `localhost:${port}/docs` where `${port}` should be replaced by port that logged in terminal
 - $ npm run docs
 ```
 - To run tests

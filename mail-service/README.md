@@ -25,18 +25,26 @@ microservice to implement email notifications, exposes **API** for sending email
 
 ## [How To Use](#how-to-use)
 ```
-- To run locally, first we need to install dependencies, then start server
+- To run locally:
 ```
-- $ npm install
+- default port is `3300`.
+- make sure that you have `node`.
+- create `.env` file at the same path of `.env-example` file and copy content of `.env-example` to `.env` file.
+- add value to those `SES_CLIENT_ID`, `SES_CLIENT_SECRET`, `SES_FROM_EMAIL` env variables in `.env` file, where you can get them from your amazon email service `SES` that you entolled in.
+- run `$ npm install`
 - $ npm run start
 ```
-- To run docker
+- To run docker:
 ```
+- default port is `3300`
+- create `.env` file at the same path of `.env-example` file and copy content of `.env-example` to `.env` file.
+- add value to those `SES_CLIENT_ID`, `SES_CLIENT_SECRET`, `SES_FROM_EMAIL` env variables in `.env` file, where you can get them from your amazon email service `SES` that you entolled in.
 - $ npm run docker
 ```
-- To run Swagger docs, run below command then open url in browser after getting port from console so, will be like that `localhost:${port}/docs`
+- To run Swagger:
 ```
-- $ npm run docs
+- run below command then open url in browser after getting port from console so, will be like that `localhost:${port}/docs` where `${port}` should be replaced by port that logged in terminal
+npm run docs
 ```
 - To run tests
 ```

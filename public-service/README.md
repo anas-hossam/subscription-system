@@ -25,17 +25,26 @@ Backend For Frontend microservice to be used by UI frontend, exposes **API** for
 
 ## [How To Use](#how-to-use)
 ```
-- To run locally, first we need to install dependencies, then start server
+- To run locally:
 ```
-- $ npm install
+- default port is `3100`.
+- make sure that you have `node`.
+- create `.env` file at the same path of `.env-example` file and copy content of `.env-example` to `.env` file.
+- update value of `SUBSCRIPTION_API_URL` in `.env` file to be `SUBSCRIPTION_API_URL=localhost:3200`
+- run `$ npm install`
+
 - $ npm run start
 ```
-- To run docker
+- To run docker:
 ```
+- default port is `3100`
+- create `.env` file at the same path of `.env-example` file and copy content of `.env-example` to `.env` file.
+- update value of `SUBSCRIPTION_API_URL` in `.env` file to be `SUBSCRIPTION_API_URL=${container-name}:3200` where `${container-name}` shuold be replaced by docker container name.
 - $ npm run docker
 ```
-- To run Swagger docs, run below command then open url in browser after getting port from console so, will be like that `localhost:${port}/docs`
+- To run Swagger:
 ```
+- run below command then open url in browser after getting port from console so, will be like that `localhost:${port}/docs` where `${port}` should be replaced by port that logged in terminal
 - $ npm run docs
 ```
 - To run tests
