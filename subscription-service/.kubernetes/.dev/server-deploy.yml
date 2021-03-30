@@ -1,27 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: filters-server
+  name: subscription-server
   labels:
-    squad: crawlers
     product: shared
     environment: development
     role: server
-    image: filters-microservice
-    version: 1.2.0
-    app: filters-server
+    image: subscription-service
+    version: 1.0.0
+    app: subscription-server
     release: stable
 spec:
   replicas: 1
   revisionHistoryLimit: 10
   selector:
     matchLabels:
-      filters.dev/role: server
+      subscription.dev/role: server
       release: stable
   template:
     metadata:
       labels:
-        filters.dev/role: server
+        subscription.dev/role: server
         release: stable
     spec:
       affinity:
@@ -35,8 +34,8 @@ spec:
                 - cost-optimized-nodes
       serviceAccountName: docker-registry-puller
       containers:
-      - name: filters-server
-        image: crowdanalyzer/filters-microservice:1.2.0
+      - name: subscription-server
+        image: anashossam/subscription-service:1.0.0
         imagePullPolicy: Always
         command:
         - envconsul
@@ -44,9 +43,9 @@ spec:
         - -prefix
         - development/common
         - -prefix
-        - development/filters
+        - development/subscription
         - node
-        - server.js
+        - src/server.js
         ports:
         - containerPort: 4000
         env:
