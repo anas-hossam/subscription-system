@@ -39,8 +39,9 @@ This microservice implementing subscription logic, including presistence of subs
 ```
 - default port is `3200`
 - create `.env` file at the same path of `.env-example` file and copy content of `.env-example` to `.env` file.
-- update value of `MAIL_API_URL` in `.env` file to be `MAIL_API_URL=http://${container-name}:3300` where `${container-name}` shuold be replaced by docker container name.
 - $ npm run docker
+- update value of `MAIL_API_URL` in `.env` file to be `MAIL_API_URL=http://${container-name}:3300` where `${container-name}` shuold be replaced by docker container name of mail service you can get it by running `docker ls` then copy it's name.
+- run `MAIL_API_URL=http://${container-name}:3300` in docker terminal after getting container name
 ```
 - To run Swagger:
 ```

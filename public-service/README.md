@@ -39,8 +39,9 @@ Backend For Frontend microservice to be used by UI frontend, exposes **API** for
 ```
 - default port is `3100`
 - create `.env` file at the same path of `.env-example` file and copy content of `.env-example` to `.env` file.
-- update value of `SUBSCRIPTION_API_URL` in `.env` file to be `SUBSCRIPTION_API_URL=http://${container-name}:3200` where `${container-name}` shuold be replaced by docker container name.
 - $ npm run docker
+- update value of `SUBSCRIPTION_API_URL` in `.env` file to be `SUBSCRIPTION_API_URL=http://${container-name}:3200` where `${container-name}` shuold be replaced by docker container name of subscription service you can get it by running `docker ls` then copy it's name.
+- run `export SUBSCRIPTION_API_URL=http://${container-name}:3200` in docker terminal after getting container name.
 ```
 - To run Swagger:
 ```
