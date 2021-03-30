@@ -1,4 +1,4 @@
-version: '3.4'
+version: '3.5'
 services:
   node:
     tty: true
@@ -11,6 +11,8 @@ services:
     build:
       context: .
       target: deps
+    networks:
+      - subscription-system
     ports:
       - ${PORT}:${PORT}
       - '39812:4040'
@@ -20,3 +22,9 @@ services:
 
   mongo:
     image: 'mongo:3.6'
+    networks:
+      - subscription-system
+
+networks:
+  subscription-system:
+    name: subscription-system

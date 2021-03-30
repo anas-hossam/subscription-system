@@ -1,4 +1,4 @@
-version: '3.4'
+version: '3.5'
 services:
   node:
     tty: true
@@ -9,9 +9,15 @@ services:
     build:
       context: .
       target: deps
+    networks:
+      - subscription-system
     ports:
       - ${PORT}:${PORT}
       - '39813:4050'
     volumes:
       - .:/var/code:rw
     entrypoint: './startup.sh'
+
+networks:
+  subscription-system:
+    name: subscription-system
