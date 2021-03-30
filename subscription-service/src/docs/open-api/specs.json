@@ -74,6 +74,21 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Not Authorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/authorization_error_response"
+                },
+                "examples": {
+                  "invalid_id": {
+                    "$ref": "#/components/examples/missing_token"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -125,6 +140,21 @@
               }
             }
           },
+          "401": {
+            "description": "Not Authorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/authorization_error_response"
+                },
+                "examples": {
+                  "invalid_id": {
+                    "$ref": "#/components/examples/missing_token"
+                  }
+                }
+              }
+            }
+          },
           "404": {
             "description": "Not Found",
             "content": {
@@ -160,6 +190,21 @@
                 "examples": {
                   "success_response": {
                     "$ref": "#/components/examples/subscriptions_success_response"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not Authorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/authorization_error_response"
+                },
+                "examples": {
+                  "invalid_id": {
+                    "$ref": "#/components/examples/missing_token"
                   }
                 }
               }
@@ -229,6 +274,21 @@
                   },
                   "invalid_id": {
                     "$ref": "#/components/examples/invalid_id"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not Authorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/authorization_error_response"
+                },
+                "examples": {
+                  "invalid_id": {
+                    "$ref": "#/components/examples/missing_token"
                   }
                 }
               }
@@ -347,6 +407,22 @@
       },
       "validation_error_response": {
         "title": "ValidationErrorResponse",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "string"
+          },
+          "details": {
+            "type": "object"
+          }
+        }
+      },
+      "authorization_error_response": {
+        "title": "AuthorizationErrorResponse",
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -481,6 +557,12 @@
         "value": {
           "ok": false,
           "error": "subscription.not_existing"
+        }
+      },
+      "missing_token": {
+        "value": {
+          "ok": false,
+          "error": "authentication.missing_token"
         }
       }
     }

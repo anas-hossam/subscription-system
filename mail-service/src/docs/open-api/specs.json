@@ -74,6 +74,21 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Not Authorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/authorization_error_response"
+                },
+                "examples": {
+                  "invalid_id": {
+                    "$ref": "#/components/examples/missing_token"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -171,6 +186,22 @@
           }
         }
       },
+      "authorization_error_response": {
+        "title": "AuthorizationErrorResponse",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "string"
+          },
+          "details": {
+            "type": "object"
+          }
+        }
+      },
       "not_found_error_response": {
         "title": "ValidationErrorResponse",
         "type": "object",
@@ -220,6 +251,12 @@
               }
             ]
           }
+        }
+      },
+      "missing_token": {
+        "value": {
+          "ok": false,
+          "error": "authentication.missing_token"
         }
       }
     }
