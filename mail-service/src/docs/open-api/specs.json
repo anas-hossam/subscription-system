@@ -199,6 +199,15 @@
           "newsletter_id": "123abc"
       }
       },
+      "mail_created_response": {
+        "value": {
+          "from": "hello@addidas.com",
+          "to": [
+              "anas-elsayed@outlook.com"
+          ],
+          "messageId": "abcd-000000@email.amazonses.com"
+        }
+      },
       "invalid_schema": {
         "value": {
           "ok": false,

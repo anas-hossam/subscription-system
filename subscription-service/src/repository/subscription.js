@@ -8,24 +8,24 @@ const repository = (container) => {
     const { database: db } = container.cradle;
     const collection = db.collection('subscriptions');
 
-    const createSubscription = (subscription) => {
+    const createSubscription = subscription => {
         return new Promise((resolve, reject) => {
             collection.insertOne(subscription, (err, { ops: [result] }) => {
                 if (err) {
-                    reject(new InternalServerError('An error occurred creating a subscription, err:' + err));
+                    return reject(new InternalServerError('An error occurred creating a subscription, err:' + err));
                 }
 
-                resolve({ _id: result._id });
+                return resolve({ _id: result._id });
             });
         });
     };
 
-    const cancelSubscription = (subscriptionId) =>
+    const cancelSubscription = subscriptionId =>
         _findById(subscriptionId, { $set: { is_active: false } }, true);
 
-    const getSubscriptionById = (subscriptionId) => _findById(subscriptionId);
+    const getSubscriptionById = subscriptionId => _findById(subscriptionId);
 
-    const getSubscriptionByEmail = (email) => _findByEmail(email);
+    const getSubscriptionByEmail = email => _findByEmail(email);
 
     const getAllSubscriptions = () => {
         return new Promise((resolve, reject) => {
@@ -37,10 +37,14 @@ const repository = (container) => {
 
             const sendSubscriptions = (err) => {
                 if (err) {
-                    reject(new InternalServerError('An error occurred fetching all subscriptions, err:' + err));
+                    return reject(
+                        new InternalServerError(
+                            'An error occurred fetching all subscriptions, err:' + err,
+                        )
+                    );
                 }
 
-                resolve(subscriptions.slice());
+                return resolve(subscriptions.slice());
             };
 
             cursor.forEach(addSubscription, sendSubscriptions);
@@ -55,10 +59,10 @@ const repository = (container) => {
         return new Promise((resolve, reject) => {
             const ObjectID = container.resolve('ObjectID');
             if (!ObjectID.isValid(id)) {
-                reject(new ValidatableError('invalid id'));
+                return reject(new ValidatableError('invalid id'));
             }
 
-            resolve(new ObjectID(id.toString()));
+            return resolve(new ObjectID(id.toString()));
         })
         .then(_id => _find({ _id }, projection, findAndUpdate));
     }
@@ -69,15 +73,15 @@ const repository = (container) => {
         return new Promise((resolve, reject) => {
             const response = (err, subscription) => {
                 if (err) {
-                    reject(new InternalServerError('An error occurred, err: ' + err));
+                    return reject(new InternalServerError('An error occurred, err: ' + err));
                 }
 
                 if (findAndUpdate && !_.isNil(subscription.value)) {
-                    resolve(subscription.value);
+                    return resolve(subscription.value);
                 } else if (!findAndUpdate && !_.isNil(subscription)) {
-                    resolve(subscription);
+                    return resolve(subscription);
                 } else {
-                    reject(new NotFoundError());
+                    return reject(new NotFoundError());
                 }
 
             };
@@ -86,7 +90,7 @@ const repository = (container) => {
                 [query, projection, { returnOriginal: false } ,response] :
                 [query, projection ,response];
             
-            collection[findAndUpdate ? 'findOneAndUpdate' : 'findOne'](...findParams);
+            return collection[findAndUpdate ? 'findOneAndUpdate' : 'findOne'](...findParams);
         });
     }
 
@@ -103,10 +107,10 @@ const repository = (container) => {
 const connect = (container) => {
     return new Promise((resolve, reject) => {
         if (_.isEmpty(container) || !container.resolve('database')) {
-            reject(new InternalServerError('connection db not supplied!'))
+            return reject(new InternalServerError('connection db not supplied!'));
         }
 
-        resolve(repository(container));
+        return resolve(repository(container));
     });
 };
 

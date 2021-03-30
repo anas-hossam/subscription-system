@@ -34,7 +34,7 @@ mediator.on('di.ready', (container) => {
                 middlewares: asValue(middlewares),
             });
 
-            return new Promise((resolve, reject) => {
+            return new Promise(resolve => {
                 const { tokenSecret } = container.resolve('serverSettings');
                 const mailService = container.resolve('mailService');
                 const { authenticate } = container.resolve('middlewares');
@@ -50,7 +50,7 @@ mediator.on('di.ready', (container) => {
                         gender: "male",
                         is_active: true,
                         date_of_birth: "1992-03-17",
-                        newsletter_id: "232323232323"
+                        newsletter_id: "123abc",
                     });
 
                     res.send(token);
@@ -64,9 +64,7 @@ mediator.on('di.ready', (container) => {
 
                 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
 
-                app.use(authenticate({
-                    secret: tokenSecret,
-                }));
+                app.use(authenticate({ secret: tokenSecret }));
         
                 app.use((req, res, next) => {
                     req.container = container.createScope();

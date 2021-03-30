@@ -16,7 +16,7 @@ const respond = promise =>
             return response.repositoryResponse;
         }
     
-        // TODO adding pub/sub to publish logs of mailResponse service
+        // TODO adding pub/sub to publish logs of mailResponse service on Logdna/Kibana
 
         if (!_.isArray(response)) {
             response = [response.repositoryResponse ? response.repositoryResponse : response];
@@ -54,7 +54,7 @@ const respond = promise =>
     });
 
 module.exports = ({ repo, mailService }, app) => {
-    app.post('/subscribe', (req, res, next) => {
+    app.post('/subscribe', (req, res) => {
         let repositoryResponse;
         const { validate } = req.container.cradle;
         const subscription = req.body;
@@ -65,7 +65,6 @@ module.exports = ({ repo, mailService }, app) => {
             })
             .catch(err => {
                 if (err.name == 'NotFound') {
-                    
                     return repo.createSubscription(subscription);
                 }
 
@@ -83,12 +82,11 @@ module.exports = ({ repo, mailService }, app) => {
                 };
             });
 
-        respond(promise).then(response => res.send(response));
+        return respond(promise).then(response => res.send(response));
     });
 
-    app.put('/unsubscribe/:id', (req, res, next) => {
+    app.put('/unsubscribe/:id', (req, res) => {
         const id = req.params.id;
-
         if (_.isNil(id)) {
             return res.send({
                 ok: false,
@@ -97,12 +95,11 @@ module.exports = ({ repo, mailService }, app) => {
         }
 
         const promise = repo.cancelSubscription(id);
-        respond(promise).then(response => res.send(response));
+        return respond(promise).then(response => res.send(response));
     });
 
-    app.get('/subscription/:id', (req, res, next) => {
+    app.get('/subscription/:id', (req, res) => {
         const id = req.params.id;
-
         if (_.isNil(id)) {
             return res.send({
                 ok: false,
@@ -111,11 +108,11 @@ module.exports = ({ repo, mailService }, app) => {
         }
 
         const promise = repo.getSubscriptionById(id);
-        respond(promise).then(response => res.send(response));
+        return respond(promise).then(response => res.send(response));
     });
 
-    app.get('/subscriptions', (req, res, next) => {
+    app.get('/subscriptions', (req, res) => {
         const promise = repo.getAllSubscriptions();
-        respond(promise).then(response => res.send(response));
+        return respond(promise).then(response => res.send(response));
     });
-}
+};

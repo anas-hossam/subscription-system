@@ -459,7 +459,7 @@
       "invalid_schema": {
         "value": {
           "ok": false,
-          "error": "public.invalid_data",
+          "error": "subscription.invalid_data",
           "details": {
             "type": [
               {
@@ -473,14 +473,14 @@
       "invalid_id": {
         "value": {
           "ok": false,
-          "error": "public.invalid_data",
+          "error": "subscription.invalid_data",
           "details": "invalid id"
         }
       },
       "not_found": {
         "value": {
           "ok": false,
-          "error": "public.not_existing"
+          "error": "subscription.not_existing"
         }
       }
     }

@@ -8,10 +8,10 @@ const HTTP_ERRORS = {
 };
 
 module.exports = ({ mailService }, app) => {
-    app.post('/sendMail', (req, res, next) => {
+    app.post('/sendMail', (req, res) => {
         const { validate } = req.container.cradle;
         const subscription = req.body;
-        validate(subscription, 'subscription')
+        return validate(subscription, 'subscription')
             .then(() => mailService.send(subscription))
             .catch(err => {
                 let error;

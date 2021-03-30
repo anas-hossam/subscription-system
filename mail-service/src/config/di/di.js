@@ -2,7 +2,7 @@
 
 const { createContainer, asValue } = require('awilix');
 
-function initDI({ serverSettings, mailSettings, models }, mediator) {
+const initDI = ({ serverSettings, mailSettings, models }, mediator) => {
     mediator.once('init', () => {
         mediator.on('boot.ready', () => {
             const container = createContainer();
@@ -22,6 +22,6 @@ function initDI({ serverSettings, mailSettings, models }, mediator) {
 
         mediator.emit('boot.ready');
     });
-}
+};
 
-module.exports.initDI = initDI
+module.exports.initDI = initDI;

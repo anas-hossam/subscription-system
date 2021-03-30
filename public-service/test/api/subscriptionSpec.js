@@ -7,13 +7,11 @@ const { createContainer, asValue } = require('awilix')
 const server = require('../../src/server/server');
 const middlewares = require('../../src/middlewares');
 const models = require('../../src/models');
-const { Subscriptions } = require('../../src/Services');
 const { createToken } = require('../../src/utilities');
-
-const { serverSettings, subscriptionsApi } = require('../../src/config/config')[process.env.NODE_ENV];
-
+const { serverSettings, subscriptionsApi } =
+    require('../../src/config/config')[process.env.NODE_ENV];
+    
 const { expect } = require('../Helpers');
-
 const subscriptions = require('../Examples/subscriptions');
 
 describe('API Subscription', () => {

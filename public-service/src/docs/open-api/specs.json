@@ -459,7 +459,7 @@
       "invalid_schema": {
         "value": {
           "ok": false,
-          "error": "subscription.invalid_data",
+          "error": "public.invalid_data",
           "details": {
             "type": [
               {

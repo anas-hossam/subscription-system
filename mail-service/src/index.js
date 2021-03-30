@@ -13,15 +13,15 @@ const mediator = new EventEmitter();
 
 console.log('--- Mail Service ---');
 
-process.on('uncaughtException', (err) => {
+process.on('uncaughtException', err => {
     console.error('Unhandled Exception', err);
 });
 
-process.on('uncaughtRejection', (err, promise) => {
+process.on('uncaughtRejection', err => {
     console.error('Unhandled Rejection', err);
 });
 
-mediator.on('di.ready', (container) => {
+mediator.on('di.ready', container => {
     container.register({
         formatMail: asValue(formatMail),
     });

@@ -29,11 +29,7 @@ class Subscriptions {
             );
         }
 
-        return this._call({
-            method: 'post',
-            payload,
-            endpoint: 'subscribe',
-        });
+        return this._call({ method: 'post', payload, endpoint: 'subscribe' });
     }
 
     unsubscribe(subscriptionId) {
@@ -47,7 +43,7 @@ class Subscriptions {
             method: 'put',
             payload: { _id: subscriptionId },
             endpoint: 'unsubscribe',
-        })
+        });
     }
 
     get(subscriptionId) {

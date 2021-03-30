@@ -8,10 +8,10 @@ const HTTP_ERRORS = {
 };
 
 module.exports = ({ subscriptionService }, app) => {
-    app.post('/subscribe', (req, res, next) => {
+    app.post('/subscribe', (req, res) => {
         const { validate } = req.container.cradle;
         const subscription = req.body;
-        validate(subscription, 'subscription')
+        return validate(subscription, 'subscription')
             .then(() => subscriptionService.subscribe(subscription))
             .catch(err => {
                 let error;
@@ -25,11 +25,7 @@ module.exports = ({ subscriptionService }, app) => {
                     details = err.details || err.message;
                 }
 
-                const response = {
-                    ok: false,
-                    error
-                };
-        
+                const response = { ok: false, error };
                 if (!_.isNil(details)) {
                     response.details = details;
                 }
@@ -39,7 +35,20 @@ module.exports = ({ subscriptionService }, app) => {
             .then(response => res.send(response));
     });
 
-    app.put('/unsubscribe/:id', (req, res, next) => {
+    app.put('/unsubscribe/:id', (req, res) => {
+        const id = req.params.id;
+        if (_.isNil(id)) {
+            return res.send({
+                ok: false,
+                error: HTTP_ERRORS.missingId('id'),
+            });
+        }
+
+        return subscriptionService.unsubscribe(id)
+            .then(response => res.send(response));
+    });
+
+    app.get('/subscription/:id', (req, res) => {
         const id = req.params.id;
 
         if (_.isNil(id)) {
@@ -49,26 +58,11 @@ module.exports = ({ subscriptionService }, app) => {
             });
         }
 
-        subscriptionService.unsubscribe(id)
+        return subscriptionService.get(id)
             .then(response => res.send(response));
     });
 
-    app.get('/subscription/:id', (req, res, next) => {
-        const id = req.params.id;
-
-        if (_.isNil(id)) {
-            return res.send({
-                ok: false,
-                error: HTTP_ERRORS.missingId('id'),
-            });
-        }
-
-        subscriptionService.get(id)
-            .then(response => res.send(response));
-    });
-
-    app.get('/subscriptions', (req, res, next) => {
+    app.get('/subscriptions', (req, res) =>
         subscriptionService.list()
-            .then(response => res.send(response));
-    });
-}
+            .then(response => res.send(response)));
+};

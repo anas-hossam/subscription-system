@@ -1,5 +1,7 @@
 'use strict';
 
+
+const _ = require('lodash');
 const express = require('express');
 const morgan = require('morgan');
 const helmet = require('helmet');
@@ -9,17 +11,17 @@ const cors = require('cors');
 const _api = require('../api/subscription');
 const { InternalServerError} = require('../Errors');
 
-const start = (container) => {
+const start = container => {
     return new Promise((resolve, reject) => {
         const { port, tokenSecret } = container.resolve('serverSettings');
         const subscriptionService = container.resolve('subscriptionService');
         const { authenticate } = container.resolve('middlewares');
 
-        if (!subscriptionService) {
+        if (_.isNil(subscriptionService)) {
             reject(new InternalServerError('The server must be started with a connected subscription service'));
         }
 
-        if (!port) {
+        if (_.isNil(port)) {
             reject(new InternalServerError('The server must be started with an available port'));
         }
 
@@ -29,9 +31,7 @@ const start = (container) => {
         app.use(cors());
         app.use(helmet());
 
-        app.use(authenticate({
-            secret: tokenSecret,
-        }));
+        app.use(authenticate({ secret: tokenSecret }));
 
         app.use((err, req, res, next) => {
             reject(new InternalServerError('Something went wrong!, err:' + err));
@@ -49,6 +49,6 @@ const start = (container) => {
 
         const server = app.listen(port, () => resolve(server));
     });
-}
+};
 
 module.exports = Object.assign({}, { start });
