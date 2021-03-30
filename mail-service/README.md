@@ -44,7 +44,7 @@ microservice to implement email notifications, exposes **API** for sending email
 - To run Swagger:
 ```
 - run below command then open url in browser after getting port from console so, will be like that `localhost:${port}/docs` where `${port}` should be replaced by port that logged in terminal
-npm run docs
+- $ npm run docs
 ```
 - To run tests
 ```
